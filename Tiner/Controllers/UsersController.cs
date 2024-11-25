@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -6,9 +7,7 @@ using Tiner.Entities;
 
 namespace Tiner.Controllers;
 
-[ApiController]
-[Route("api/[controller]")]
-public class UserController : ControllerBase {
+public class UserController : BaseApiController {
 
     private readonly ApplicationDbContext _context;
 
@@ -16,6 +15,7 @@ public class UserController : ControllerBase {
         _context = context;
     }
 
+    [AllowAnonymous]
     [HttpGet] // /api/user
     public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers() {
         var users = await _context.AppUsers.ToListAsync();
@@ -23,6 +23,7 @@ public class UserController : ControllerBase {
         return users;
     }
 
+    [Authorize]
     [HttpGet("{id:int}")] // /api/user/{id}
     public async Task<ActionResult<AppUser>> GetUser(int id)
     {
