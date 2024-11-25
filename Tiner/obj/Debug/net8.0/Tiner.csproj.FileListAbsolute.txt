@@ -140,3 +140,5 @@ C:\Users\ADMIN\source\repos\Final-years-project\Tiner\Tiner\bin\Debug\net8.0\Sys
 C:\Users\ADMIN\source\repos\Final-years-project\Tiner\Tiner\bin\Debug\net8.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\ADMIN\source\repos\Final-years-project\Tiner\Tiner\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.dll
 C:\Users\ADMIN\source\repos\Final-years-project\Tiner\Tiner\bin\Debug\net8.0\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll
+C:\Users\ADMIN\source\repos\Final-years-project\Tiner\Tiner\bin\Debug\net8.0\Data\UserSeedData.json
+C:\Users\ADMIN\source\repos\Final-years-project\Tiner\Tiner\bin\Debug\net8.0\AutoMapper.dll

@@ -1,9 +1,10 @@
 {
   "version": 2,
-  "dgSpecHash": "LtnFnn8st38qiI8/nMcZfTRq4jjY3cMFA5EtE5/gDIclPcJoNS0OMm9qjAAk+8avB9lm+8KbOl9DKCfflgs/Nw==",
+  "dgSpecHash": "GSH5iDsIgPqM5BZMO3fbBP23+a+L0rvZlC8DIE2pbhNkVR3V/tvhBE+a22SQ8dWJ5TQNHsAFnYQQg5Fmxbq6iA==",
   "success": true,
   "projectFilePath": "C:\\Users\\ADMIN\\source\\repos\\Final-years-project\\Tiner\\Tiner\\Tiner.csproj",
   "expectedPackageFiles": [
+    "C:\\Users\\ADMIN\\.nuget\\packages\\automapper\\13.0.1\\automapper.13.0.1.nupkg.sha512",
     "C:\\Users\\ADMIN\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\ADMIN\\.nuget\\packages\\microsoft.aspnetcore.authentication.jwtbearer\\8.0.11\\microsoft.aspnetcore.authentication.jwtbearer.8.0.11.nupkg.sha512",
     "C:\\Users\\ADMIN\\.nuget\\packages\\microsoft.bcl.asyncinterfaces\\6.0.0\\microsoft.bcl.asyncinterfaces.6.0.0.nupkg.sha512",

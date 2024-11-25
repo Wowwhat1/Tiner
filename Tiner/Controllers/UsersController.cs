@@ -1,33 +1,28 @@
+using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Tiner.Data;
+using Tiner.DTOs;
 using Tiner.Entities;
+using Tiner.Interfaces;
 
 namespace Tiner.Controllers;
 
-public class UserController : BaseApiController {
-
-    private readonly ApplicationDbContext _context;
-
-    public UserController(ApplicationDbContext context) {
-        _context = context;
-    }
-
-    [AllowAnonymous]
+[Authorize]
+public class UserController(IUserRepository userRepository) : BaseApiController {
     [HttpGet] // /api/user
-    public async Task<ActionResult<IEnumerable<AppUser>>> GetUsers() {
-        var users = await _context.AppUsers.ToListAsync();
+    public async Task<ActionResult<IEnumerable<TinerDto>>> GetUsers() {
+        var users = await userRepository.GetTinerAsync();
 
-        return users;
+        return Ok(users);
     }
 
-    [Authorize]
-    [HttpGet("{id:int}")] // /api/user/{id}
-    public async Task<ActionResult<AppUser>> GetUser(int id)
+    [HttpGet("{username}")] // /api/user/{id}
+    public async Task<ActionResult<TinerDto>> GetUser(string username)
     {
-        var user = await _context.AppUsers.FindAsync(id);
+        var user = await userRepository.GetTinerByNameAsync(username);
 
         if (user == null)
         {
