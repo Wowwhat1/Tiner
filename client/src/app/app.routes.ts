@@ -17,7 +17,7 @@ export const routes: Routes = [
         canActivate: [authGuard],
         children: [
             {path: 'members', component: TinerListComponent},
-            {path: 'members/:id', component: TinerDetailComponent},
+            {path: 'members/:username', component: TinerDetailComponent},
             {path: 'lists', component: ListsComponent},
             {path: 'messages', component: MessagesComponent}
         ]

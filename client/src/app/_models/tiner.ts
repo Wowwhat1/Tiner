@@ -2,7 +2,7 @@ import { Photo } from "./photo"
 
 export interface Tiner {
     id: number
-    username: string
+    userName: string
     age: number
     photoUrl: string
     knownAs: string

@@ -1,1 +1,54 @@
-<p>tiner-detail works!</p>
+@if (tiner) {
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <img [src]="tiner.photoUrl || './assets/user.png'" [alt]="tiner.knownAs"
+                    class="card-img-top img-thumbnail w-75 mx-auto mt-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ tiner.knownAs }}</h5>
+                    <p class="card-text">
+                        <strong>Location:</strong> {{ tiner.city }}, {{ tiner.country }}
+                    </p>
+                    <p class="card-text">
+                        <strong>Age:</strong> {{ tiner.age }}
+                    </p>
+                    <p class="card-text">
+                        <strong>Last Active:</strong> {{ tiner.lastActive }}
+                    </p>
+                    <p class="card-text">
+                        <strong>Joined Tiner since:</strong> {{ tiner.created }}
+                    </p>
+                </div>
+                <div class="card-footer text-center">
+                    <div class="btn-group">
+                        <button class="btn btn-primary"><i class="fa fa-thumbs-up"></i> Like</button>
+                        <button class="btn btn-success"><i class="fa fa-envelope"></i> Message</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-7">
+            <tabset class="tiner-tabs">
+                <tab heading="About {{tiner.knownAs}}">
+                    <div class="bg-white">
+                        <h4>Description</h4>
+                        <p>{{tiner.introduction}}</p>
+                        <h4>Looking for</h4>
+                        <p>{{tiner.lookingFor}}</p>
+                    </div>
+                </tab>
+                <tab heading="Interests">
+                    <h4>Interests</h4>
+                    <p>{{tiner.interests}}</p>
+                </tab>
+                <tab heading="Photos">
+                    <p>Photos</p>
+                </tab>
+                <tab heading="Messages">
+                    <p>Messages</p>
+                </tab>
+            </tabset>
+        </div>
+    </div>
+}
