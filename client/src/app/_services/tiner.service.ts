@@ -17,4 +17,8 @@ export class TinerService {
   getTiner(username: string) {
     return this.http.get<Tiner>(this.baseUrl + 'user/' + username);
   }
+
+  updateTiner(tiner: Tiner) {
+    return this.http.put(this.baseUrl + 'user', tiner);
+  }
 }

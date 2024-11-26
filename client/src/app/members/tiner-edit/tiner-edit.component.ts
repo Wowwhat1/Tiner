@@ -1,19 +1,30 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, HostListener, inject, OnInit, ViewChild } from '@angular/core';
 import { AccountService } from '../../_services/account.service';
 import { TinerService } from '../../_services/tiner.service';
 import { Tiner } from '../../_models/tiner';
+import { TabsModule } from 'ngx-bootstrap/tabs';
+import { FormsModule, NgForm } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-tiner-edit',
   standalone: true,
-  imports: [],
+  imports: [TabsModule, FormsModule],
   templateUrl: './tiner-edit.component.html',
   styleUrl: './tiner-edit.component.css'
 })
 export class TinerEditComponent implements OnInit {
   tiner?: Tiner;
+  @ViewChild('editForm') editForm?: NgForm;
+  @HostListener('window:beforeunload', ['$event']) unloadNotification($event: any) {
+    if (this.editForm?.dirty) {
+      $event.returnValue = true;
+    }
+  }
+  
   private accService = inject(AccountService);
   private tinerService = inject(TinerService);
+  private toastr = inject(ToastrService);
 
   ngOnInit(): void {
     this.loadTiner();
@@ -29,5 +40,14 @@ export class TinerEditComponent implements OnInit {
         }
       });
     } else return;
+  }
+
+  update() {
+    this.tinerService.updateTiner(this.editForm?.value).subscribe({
+      next: () => {
+        this.toastr.success('Profile updated successfully');
+        this.editForm?.reset(this.tiner);
+      }
+    });
   }
 }

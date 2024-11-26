@@ -19,7 +19,7 @@ export const routes: Routes = [
         children: [
             {path: 'members', component: TinerListComponent},
             {path: 'members/:username', component: TinerDetailComponent},
-            {path: 'member/edit', component: TinerEditComponent},
+            {path: 'member/edit', component: TinerEditComponent, canDeactivate: ['preventUnsavedChangesGuard']},
             {path: 'lists', component: ListsComponent},
             {path: 'messages', component: MessagesComponent}
         ]

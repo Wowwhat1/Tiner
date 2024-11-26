@@ -6,7 +6,7 @@ export interface Tiner {
     age: number
     photoUrl: string
     knownAs: string
-    created: Date
+    createdOn: Date
     lastActive: Date
     gender: string
     introduction: string
