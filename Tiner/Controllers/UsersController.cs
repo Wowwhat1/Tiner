@@ -1,3 +1,4 @@
+using System.Security.Claims;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -11,7 +12,7 @@ using Tiner.Interfaces;
 namespace Tiner.Controllers;
 
 [Authorize]
-public class UserController(IUserRepository userRepository) : BaseApiController {
+public class UserController(IUserRepository userRepository, IMapper mapper) : BaseApiController {
     [HttpGet] // /api/user
     public async Task<ActionResult<IEnumerable<TinerDto>>> GetUsers() {
         var users = await userRepository.GetTinerAsync();
@@ -30,5 +31,31 @@ public class UserController(IUserRepository userRepository) : BaseApiController 
         }
 
         return user;
+    }
+
+    [HttpPut] // /api/update
+    public async Task<ActionResult> UpdateUser(TinerUpdateDto tinerUpdateDto)
+    {
+        var userName = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        if (userName == null)
+        {
+            return BadRequest("User not found");
+        }
+
+        var user = await userRepository.GetUserByUsernameAsync(userName);
+        if (user == null)
+        {
+            return BadRequest("User not found");
+        }
+
+        mapper.Map(tinerUpdateDto, user);
+
+        if (await userRepository.SaveAsync())
+        {
+            return NoContent();
+        }
+
+        return BadRequest("Failed to update user");
     }
 }
