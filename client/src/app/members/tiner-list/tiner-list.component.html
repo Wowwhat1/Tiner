@@ -1,6 +1,6 @@
 <div class="row">
     
-    @for (tiner of tiners; track tiner.id) {
+    @for (tiner of tinerService.tiners(); track tiner.id) {
         <div class="col-2">
             <app-member-card [tiner]="tiner"></app-member-card>
         </div>

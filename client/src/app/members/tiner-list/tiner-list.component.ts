@@ -11,16 +11,13 @@ import { MemberCardComponent } from "../member-card/member-card.component";
   styleUrl: './tiner-list.component.css'
 })
 export class TinerListComponent implements OnInit {
-  private tinerService = inject(TinerService);
-  tiners: Tiner[] = [];
+  tinerService = inject(TinerService);
 
   ngOnInit() : void {
-    this.loadTiners();
+    if (this.tinerService.tiners().length === 0) this.loadTiners();
   }
 
   loadTiners() {
-    this.tinerService.getTiners().subscribe({
-      next: tiners => this.tiners = tiners
-    })
+    this.tinerService.getTiners();
   }
 }
