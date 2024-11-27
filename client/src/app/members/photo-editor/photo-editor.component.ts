@@ -77,22 +77,35 @@ export class PhotoEditorComponent implements OnInit {
     });
 
     this.uploader.onAfterAddingFile = (file) => {
-            console.log('File added:', file);
       file.withCredentials = false;
     };
 
     // Append the correct key for FormData
     this.uploader.onBuildItemForm = (fileItem, form) => {
         form.append('formFile', fileItem._file); // Matches backend key
-        console.log('FormData updated for file:', fileItem._file.name);
     };
 
     this.uploader.onSuccessItem = (item, response, status, headers) => {
-            console.log('Upload successful:', item, response);
       const photo = JSON.parse(response);
       const updatedTiner = { ...this.tiner() };
       updatedTiner.photos.push(photo);
       this.tinerChange.emit(updatedTiner);
+
+      if (photo.isMain) {
+        const user = this.accService.currentUser();
+        if (user) {
+          user.photoUrl = photo.url;
+          this.accService.setCurrentUser(user);
+        }
+
+        updatedTiner.photoUrl = photo.url;
+        updatedTiner.photos.forEach((p) => {
+          if (p.isMain) p.isMain = false;
+          if (p.id === photo.id) p.isMain = true;
+        });
+
+        this.tinerChange.emit(updatedTiner);
+      }
     };
 
     // Handle upload errors
