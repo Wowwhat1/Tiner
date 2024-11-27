@@ -3,6 +3,7 @@ import { inject, Injectable, signal } from '@angular/core';
 import { environment } from '../../environments/environment';
 import { Tiner } from '../_models/tiner';
 import { of, tap, map } from 'rxjs';
+import { Photo } from '../_models/photo';
 
 @Injectable({
   providedIn: 'root'
@@ -32,6 +33,23 @@ export class TinerService {
     return this.http.put(this.baseUrl + 'user', tiner).pipe(
       tap(() => { 
         this.tiners.update(tiners => tiners.map(t => t.userName === tiner.userName ? tiner : t))
+      })
+    );
+  }
+
+  setMainPhoto(photoId: number) {
+    return this.http.put(this.baseUrl + 'user/set-main-photo/' + photoId, {});
+  }
+
+  deletePhoto(photo: Photo) {
+    return this.http.delete(this.baseUrl + 'user/delete-photo/' + photo.id).pipe(
+      tap(() => {
+        this.tiners.update(tiners => tiners.map(t => {
+          if(t.photos) {
+            t.photos = t.photos.filter(p => p.id !== photo.id);
+          }
+          return t;
+        }))
       })
     );
   }

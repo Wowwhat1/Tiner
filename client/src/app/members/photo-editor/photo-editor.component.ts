@@ -4,6 +4,8 @@ import { DecimalPipe, NgClass, NgFor, NgIf, NgStyle } from '@angular/common';
 import { FileUploader, FileUploadModule } from 'ng2-file-upload';
 import { AccountService } from '../../_services/account.service';
 import { environment } from '../../../environments/environment';
+import { TinerService } from '../../_services/tiner.service';
+import { Photo } from '../../_models/photo';
 
 @Component({
   selector: 'app-photo-editor',
@@ -16,6 +18,7 @@ export class PhotoEditorComponent implements OnInit {
   tiner = input.required<Tiner>();
 
   private accService = inject(AccountService);
+  private tinerService = inject(TinerService);
   uploader?: FileUploader;
   hasBaseDropZoneOver = false;
   baseUrl = environment.apiUrl;
@@ -27,6 +30,37 @@ export class PhotoEditorComponent implements OnInit {
 
   fileOverBase(e: any) {
     this.hasBaseDropZoneOver = e;
+  }
+
+  deletePhoto(photo: Photo) {  
+    this.tinerService.deletePhoto(photo).subscribe({
+      next: () => {
+        const updatedTiner = { ...this.tiner() };
+        updatedTiner.photos = updatedTiner.photos.filter(p => p.id !== photo.id);
+        this.tinerChange.emit(updatedTiner);
+      }
+    });
+  }
+
+  setMainPhoto(photo: any) {
+    this.tinerService.setMainPhoto(photo.id).subscribe({
+      next: () => {
+        const user = this.accService.currentUser();
+        if (user) {
+          user.photoUrl = photo.url;
+          this.accService.setCurrentUser(user);
+        }
+
+        const updatedTiner = { ...this.tiner() };
+        updatedTiner.photoUrl = photo.url;
+        updatedTiner.photos.forEach((p) => {
+          if (p.isMain) p.isMain = false;
+          if (p.id === photo.id) p.isMain = true;
+        });
+
+        this.tinerChange.emit(updatedTiner);
+      }
+    });
   }
 
   initializeUploader() {
