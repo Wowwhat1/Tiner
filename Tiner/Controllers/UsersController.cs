@@ -7,12 +7,13 @@ using Microsoft.EntityFrameworkCore;
 using Tiner.Data;
 using Tiner.DTOs;
 using Tiner.Entities;
+using Tiner.Extensions;
 using Tiner.Interfaces;
 
 namespace Tiner.Controllers;
 
 [Authorize]
-public class UserController(IUserRepository userRepository, IMapper mapper) : BaseApiController {
+public class UserController(IUserRepository userRepository, IMapper mapper, IPhotoService photoService) : BaseApiController {
     [HttpGet] // /api/user
     public async Task<ActionResult<IEnumerable<TinerDto>>> GetUsers() {
         var users = await userRepository.GetTinerAsync();
@@ -36,14 +37,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Ba
     [HttpPut] // /api/update
     public async Task<ActionResult> UpdateUser(TinerUpdateDto tinerUpdateDto)
     {
-        var userName = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-        if (userName == null)
-        {
-            return BadRequest("User not found");
-        }
-
-        var user = await userRepository.GetUserByUsernameAsync(userName);
+        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
         if (user == null)
         {
             return BadRequest("User not found");
@@ -57,5 +51,37 @@ public class UserController(IUserRepository userRepository, IMapper mapper) : Ba
         }
 
         return BadRequest("Failed to update user");
+    }
+
+    [HttpPost("add-photo")] // /api/user/add-photo
+    public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile formFile) {
+        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+
+        if (user == null)
+        {
+            return BadRequest("Cannot update profile");
+        }
+
+        var result = await photoService.AddPhotoAsync(formFile);
+
+        if (result.Error != null)
+        {
+            return BadRequest(result.Error.Message);
+        }   
+
+        var photo = new Photo
+        {
+            Url = result.SecureUrl.AbsoluteUri,
+            PublicId = result.PublicId
+        };
+
+        user.Photos.Add(photo);
+
+        if (await userRepository.SaveAsync())
+        {
+            return CreatedAtAction("GetUser", new { username = user.UserName }, mapper.Map<PhotoDto>(photo));
+        }
+
+        return BadRequest("Problem adding photo");
     }
 }

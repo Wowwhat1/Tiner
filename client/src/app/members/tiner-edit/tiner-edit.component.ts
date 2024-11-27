@@ -5,11 +5,12 @@ import { Tiner } from '../../_models/tiner';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { FormsModule, NgForm } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
+import { PhotoEditorComponent } from "../photo-editor/photo-editor.component";
 
 @Component({
   selector: 'app-tiner-edit',
   standalone: true,
-  imports: [TabsModule, FormsModule],
+  imports: [TabsModule, FormsModule, PhotoEditorComponent],
   templateUrl: './tiner-edit.component.html',
   styleUrl: './tiner-edit.component.css'
 })
@@ -49,5 +50,9 @@ export class TinerEditComponent implements OnInit {
         this.editForm?.reset(this.tiner);
       }
     });
+  }
+
+  onTinerChange(event: Tiner) {
+    this.tiner = event;
   }
 }
