@@ -8,6 +8,7 @@ using Tiner.Data;
 using Tiner.DTOs;
 using Tiner.Entities;
 using Tiner.Extensions;
+using Tiner.Helpers;
 using Tiner.Interfaces;
 
 namespace Tiner.Controllers;
@@ -15,8 +16,10 @@ namespace Tiner.Controllers;
 [Authorize]
 public class UserController(IUserRepository userRepository, IMapper mapper, IPhotoService photoService) : BaseApiController {
     [HttpGet] // /api/user
-    public async Task<ActionResult<IEnumerable<TinerDto>>> GetUsers() {
-        var users = await userRepository.GetTinerAsync();
+    public async Task<ActionResult<IEnumerable<TinerDto>>> GetUsers([FromQuery]UserParams userParams) {
+        var users = await userRepository.GetTinerAsync(userParams);
+
+        Response.AddPaginationHeader(users);
 
         return Ok(users);
     }

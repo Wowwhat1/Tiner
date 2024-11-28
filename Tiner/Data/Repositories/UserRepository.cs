@@ -3,15 +3,17 @@ using AutoMapper.QueryableExtensions;
 using Microsoft.EntityFrameworkCore;
 using Tiner.DTOs;
 using Tiner.Entities;
+using Tiner.Helpers;
 using Tiner.Interfaces;
 
 namespace Tiner.Data.Repositories;
 
 public class UserRepository(ApplicationDbContext context, IMapper mapper) : IUserRepository
 {
-    public async Task<IEnumerable<TinerDto>> GetTinerAsync()
+    public async Task<PagedList<TinerDto>> GetTinerAsync(UserParams userParams)
     {
-        return await context.AppUsers.ProjectTo<TinerDto>(mapper.ConfigurationProvider).ToListAsync();
+        var query = context.AppUsers.ProjectTo<TinerDto>(mapper.ConfigurationProvider);
+        return await PagedList<TinerDto>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
     }
 
     public async Task<TinerDto?> GetTinerByNameAsync(string name)
