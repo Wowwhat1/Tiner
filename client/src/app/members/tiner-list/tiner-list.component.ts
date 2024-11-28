@@ -17,8 +17,6 @@ import { ButtonsModule } from 'ngx-bootstrap/buttons';
 })
 export class TinerListComponent implements OnInit {
   tinerService = inject(TinerService);
-  private accService = inject(AccountService);
-  userParams = new UserParams(this.accService.currentUser());
   genderList = [{ value: 'male', display: 'Males' }, { value: 'female', display: 'Females' }];
 
   ngOnInit() : void {
@@ -28,18 +26,18 @@ export class TinerListComponent implements OnInit {
   }
 
   loadTiners() {
-    this.tinerService.getTiners(this.userParams);
-    console.log('User Params:', this.tinerService.getTiners(this.userParams));
+    this.tinerService.getTiners();
+    console.log('User Params:', this.tinerService.getTiners());
   }
 
   resetFilters() {
-    this.userParams = new UserParams(this.accService.currentUser());
+    this.tinerService.resetUserParams();
     this.loadTiners();
   }
 
   pagedChanged(event: any) {
-    if (this.userParams.pageNumber !== event.page) {
-      this.userParams.pageNumber = event.page; // Update the page number
+    if (this.tinerService.userParams().pageNumber !== event.page) {
+      this.tinerService.userParams().pageNumber = event.page; // Update the page number
       this.loadTiners(); // Reload data for the new page
     }
   }

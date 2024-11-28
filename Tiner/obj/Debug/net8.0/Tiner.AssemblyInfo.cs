@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Tiner")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+073d3c9eddb6ff7269c3858be88693b1e62194a0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+96be0669a2689b908825ff9f7954fb7273adb457")]
 [assembly: System.Reflection.AssemblyProductAttribute("Tiner")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Tiner")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
