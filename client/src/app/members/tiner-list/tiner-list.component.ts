@@ -25,15 +25,21 @@ export class TinerListComponent implements OnInit {
     };
   }
 
-  loadTiners() {
-    this.tinerService.getTiners();
-    console.log('User Params:', this.tinerService.getTiners());
+  loadTiners(resetPage: boolean = false) {
+    if (resetPage) {
+      this.tinerService.userParams().pageNumber = 1; // Reset page number for new filters
+    }
+    this.tinerService.getTiners(); // Fetch data with updated params
   }
 
   resetFilters() {
     this.tinerService.resetUserParams();
     this.tinerService.userParams().pageNumber = 1;
     this.loadTiners();
+  }
+
+  applyFilter() {
+    this.loadTiners(true); // Pass 'true' to reset pageNumber
   }
 
   pagedChanged(event: any) {
