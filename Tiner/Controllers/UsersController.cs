@@ -17,6 +17,7 @@ namespace Tiner.Controllers;
 public class UserController(IUserRepository userRepository, IMapper mapper, IPhotoService photoService) : BaseApiController {
     [HttpGet] // /api/user
     public async Task<ActionResult<IEnumerable<TinerDto>>> GetUsers([FromQuery]UserParams userParams) {
+        userParams.CurrentUsername = User.GetUsername();
         var users = await userRepository.GetTinerAsync(userParams);
 
         Response.AddPaginationHeader(users);

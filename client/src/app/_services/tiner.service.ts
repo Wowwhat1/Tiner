@@ -5,6 +5,7 @@ import { Tiner } from '../_models/tiner';
 import { of, tap, map } from 'rxjs';
 import { Photo } from '../_models/photo';
 import { PaginatedResult } from '../_models/pagination';
+import { UserParams } from '../_models/userParams';
 
 @Injectable({
   providedIn: 'root'
@@ -15,7 +16,32 @@ export class TinerService {
   // tiners = signal<Tiner[]>([]);
   paginatedResult = signal<PaginatedResult<Tiner[]> | null>(null);
 
-  getTiners(pageNumber?: number, pageSize?: number) {
+  getTiners(userParams: UserParams) {
+    let params = this.setPaginationHeader(userParams.pageNumber, userParams.pageSize);
+    console.log('Params:', params);
+
+    params = params.append('minAge', userParams.minAge);
+    params = params.append('maxAge', userParams.maxAge);
+    params = params.append('gender', userParams.gender);
+    params = params.append('orderBy', userParams.orderBy);
+
+    return this.http.get<Tiner[]>(this.baseUrl + 'user', { observe: 'response', params }).subscribe({
+    next: response => {
+      const paginationHeader = response.headers.get('Pagination');
+      if (paginationHeader) {
+        const parsedPagination = JSON.parse(paginationHeader);
+        console.log('Parsed Pagination:', parsedPagination);
+        this.paginatedResult.set({
+          items: response.body as Tiner[],
+          pagination: parsedPagination
+        });
+      } else {
+        console.error('Pagination header is missing.');
+      }
+    }});
+  }
+
+  private setPaginationHeader(pageNumber: number, pageSize: number) {
     let params = new HttpParams();
 
     if (pageNumber && pageSize) {
@@ -23,22 +49,7 @@ export class TinerService {
       params = params.append('pageSize', pageSize);
     }
 
-    return this.http.get<Tiner[]>(this.baseUrl + 'user', { observe: 'response', params }).subscribe({
-  next: response => {
-    const paginationHeader = response.headers.get('Pagination');
-    if (paginationHeader) {
-      const parsedPagination = JSON.parse(paginationHeader);
-      console.log('Parsed Pagination:', parsedPagination);
-      this.paginatedResult.set({
-        items: response.body as Tiner[],
-        pagination: parsedPagination
-      });
-    } else {
-      console.error('Pagination header is missing.');
-    }
-  }
-});
-
+    return params;
   }
 
   getTiner(username: string) {

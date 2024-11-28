@@ -12,8 +12,28 @@ public class UserRepository(ApplicationDbContext context, IMapper mapper) : IUse
 {
     public async Task<PagedList<TinerDto>> GetTinerAsync(UserParams userParams)
     {
-        var query = context.AppUsers.ProjectTo<TinerDto>(mapper.ConfigurationProvider);
-        return await PagedList<TinerDto>.CreateAsync(query, userParams.PageNumber, userParams.PageSize);
+        var query = context.AppUsers.AsQueryable();
+
+        query = query.Where(x => x.UserName != userParams.CurrentUsername);
+
+        if (userParams.Gender != null)
+        {
+            query = query.Where(x => x.Gender == userParams.Gender);
+        }
+
+        var minDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MaxAge - 1));
+        var maxDob = DateOnly.FromDateTime(DateTime.Today.AddYears(-userParams.MinAge));
+
+        query = query.Where(x => x.Dob >= minDob && x.Dob <= maxDob);
+
+        query = userParams.OrderBy switch
+        {
+            "createdOn" => query.OrderByDescending(x => x.CreatedOn),
+            _ => query.OrderByDescending(x => x.LastActive)
+        };
+
+        return await PagedList<TinerDto>.CreateAsync(query.ProjectTo<TinerDto>(mapper.ConfigurationProvider), userParams.PageNumber, 
+            userParams.PageSize);
     }
 
     public async Task<TinerDto?> GetTinerByNameAsync(string name)
