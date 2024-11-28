@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Tiner.Data;
 using Tiner.Data.Repositories;
+using Tiner.Entities;
 using Tiner.Helpers;
 using Tiner.Interfaces;
 using Tiner.Services;
@@ -17,6 +18,7 @@ public static class AppServiceExtensions {
         services.AddScoped<ITokenService, TokenService>();
         services.AddScoped<IUserRepository, UserRepository>();
         services.AddScoped<IPhotoService, PhotoService>();
+        services.AddScoped<IMatchedRepository, MatchRepository>();
         services.AddScoped<LogUserActivity>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));

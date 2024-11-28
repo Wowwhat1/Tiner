@@ -1,1 +1,39 @@
-<p>lists works!</p>
+<div class="text-center mt-3">
+    <h2>{{getTitle()}}</h2>
+</div>
+
+<div class="container mt-3">
+    <div class="d-flex">
+        <div class="btn-group">
+            <button class="btn btn-primary" btnRadio="match"
+                [(ngModel)]="predicate" (click)="loadMatches()">
+                Tiners you matched with
+            </button>
+            <button class="btn btn-primary" btnRadio="matchedBy" [(ngModel)]="predicate" (click)="loadMatches()">
+                Tiners who matched you
+            </button>
+            <button class="btn btn-primary" btnRadio="mutual" [(ngModel)]="predicate" (click)="loadMatches()">
+                Mutual
+            </button>
+        </div>
+    </div>
+
+    <div class="row mt-3">
+        @for (tiner of matchService.paginatedResult()?.items; track tiner.id) {
+            <div class="col-2">
+                <app-member-card [tiner]="tiner"></app-member-card>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Pagination -->
+@if (matchService.paginatedResult()?.pagination) {
+<div class="d-flex justify-content-center mt-4">
+    <pagination [boundaryLinks]="true" [totalItems]="matchService.paginatedResult()?.pagination!.totalCount"
+        [itemsPerPage]="matchService.paginatedResult()?.pagination!.pageSize" (pageChanged)="pagedChanged($event)"
+        [(ngModel)]="matchService.paginatedResult()?.pagination!.currentPage" [maxSize]="10" previousText="&lsaquo;"
+        nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;">
+    </pagination>
+</div>
+}

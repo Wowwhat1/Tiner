@@ -17,13 +17,13 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 
         modelBuilder.Entity<MatchedUser>()
             .HasOne(x => x.SrcUser)
-            .WithMany(x => x.MatchedByUsers)
+            .WithMany(x => x.UsersMatched)
             .HasForeignKey(x => x.SrcUserId)
             .OnDelete(DeleteBehavior.Cascade);
 
         modelBuilder.Entity<MatchedUser>()
             .HasOne(x => x.TargetUser)
-            .WithMany(x => x.UsersMatched)
+            .WithMany(x => x.MatchedByUsers)
             .HasForeignKey(x => x.TargetUserId)
             .OnDelete(DeleteBehavior.Cascade);
     }

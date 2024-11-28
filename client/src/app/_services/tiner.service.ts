@@ -7,6 +7,7 @@ import { Photo } from '../_models/photo';
 import { PaginatedResult } from '../_models/pagination';
 import { UserParams } from '../_models/userParams';
 import { AccountService } from './account.service';
+import { setPaginatedResponse, setPaginationHeader } from './_helper/paginationHelper';
 
 @Injectable({
   providedIn: 'root'
@@ -22,16 +23,17 @@ export class TinerService {
 
   resetUserParams() {
     this.userParams.set(new UserParams(this.user));
+    this.tinerCache.clear(); 
   }
 
   getTiners() {
     const response = this.tinerCache.get(Object.values(this.userParams()).join('-'));
 
     if (response) {
-      return this.setPaginatedResponse(response);
+      return setPaginatedResponse(response, this.paginatedResult);
     }
 
-    let params = this.setPaginationHeader(this.userParams().pageNumber, this.userParams().pageSize);
+    let params = setPaginationHeader(this.userParams().pageNumber, this.userParams().pageSize);
 
     params = params.append('minAge', this.userParams().minAge);
     params = params.append('maxAge', this.userParams().maxAge);
@@ -40,27 +42,9 @@ export class TinerService {
 
     return this.http.get<Tiner[]>(this.baseUrl + 'user', { observe: 'response', params }).subscribe({
     next: response => {
-      this.setPaginatedResponse(response);
+      setPaginatedResponse(response, this.paginatedResult);
       this.tinerCache.set(Object.values(this.userParams()).join('-'), response);
     }});
-  }
-
-  private setPaginatedResponse(response: HttpResponse<Tiner[]>) {
-    this.paginatedResult.set({
-      items: response.body as Tiner[],
-      pagination: JSON.parse(response.headers.get('Pagination')!)
-    })
-  }
-  
-  private setPaginationHeader(pageNumber: number, pageSize: number) {
-    let params = new HttpParams();
-
-    if (pageNumber && pageSize) {
-      params = params.append('pageNumber', pageNumber);
-      params = params.append('pageSize', pageSize);
-    }
-
-    return params;
   }
 
   getTiner(username: string) {

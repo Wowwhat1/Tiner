@@ -32,6 +32,7 @@ export class TinerListComponent implements OnInit {
 
   resetFilters() {
     this.tinerService.resetUserParams();
+    this.tinerService.userParams().pageNumber = 1;
     this.loadTiners();
   }
 

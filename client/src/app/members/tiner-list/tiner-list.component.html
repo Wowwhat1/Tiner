@@ -61,19 +61,19 @@
 
     <!-- Tiner Cards -->
     @for (tiner of tinerService.paginatedResult()?.items; track tiner.id) {
-    <div class="col-md-2">
-        <app-member-card [tiner]="tiner"></app-member-card>
-    </div>
+        <div class="col-md-2">
+            <app-member-card [tiner]="tiner"></app-member-card>
+        </div>
     }
 
     <!-- Pagination -->
     @if (tinerService.paginatedResult()?.pagination) {
-    <div class="d-flex justify-content-center mt-4">
-        <pagination [boundaryLinks]="true" [totalItems]="tinerService.paginatedResult()?.pagination!.totalCount"
-            [itemsPerPage]="tinerService.paginatedResult()?.pagination!.pageSize" (pageChanged)="pagedChanged($event)"
-            [(ngModel)]="tinerService.paginatedResult()?.pagination!.currentPage"
-            [maxSize]="10" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;">
-        </pagination>
-    </div>
+        <div class="d-flex justify-content-center mt-4">
+            <pagination [boundaryLinks]="true" [totalItems]="tinerService.paginatedResult()?.pagination!.totalCount"
+                [itemsPerPage]="tinerService.paginatedResult()?.pagination!.pageSize" (pageChanged)="pagedChanged($event)"
+                [(ngModel)]="tinerService.paginatedResult()?.pagination!.currentPage"
+                [maxSize]="10" previousText="&lsaquo;" nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;">
+            </pagination>
+        </div>
     }
 </div>
