@@ -49,7 +49,8 @@ public class UserRepository(ApplicationDbContext context, IMapper mapper) : IUse
 
     public async Task<AppUser> GetUserByUsernameAsync(string username)
     {
-        return await context.AppUsers.Include(x => x.Photos).SingleOrDefaultAsync(x => x.UserName == username);
+        return await context.AppUsers.Include(x => x.Photos)
+            .SingleOrDefaultAsync(x => x.UserName == username);
     }
 
     public async Task<IEnumerable<AppUser>> GetUsersAsync()

@@ -4,11 +4,13 @@ import { ActivatedRoute } from '@angular/router';
 import { Tiner } from '../../_models/tiner';
 import { TabsModule } from 'ngx-bootstrap/tabs';
 import { GalleryItem, GalleryModule, ImageItem } from 'ng-gallery';
+import { TimeagoModule } from 'ngx-timeago';
+import { DatePipe } from '@angular/common';
 
 @Component({
   selector: 'app-tiner-detail',
   standalone: true,
-  imports: [TabsModule, GalleryModule],
+  imports: [TabsModule, GalleryModule, TimeagoModule, DatePipe],
   templateUrl: './tiner-detail.component.html',
   styleUrl: './tiner-detail.component.css'
 })

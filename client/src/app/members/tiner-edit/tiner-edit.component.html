@@ -25,10 +25,10 @@
                     <strong>Age:</strong> {{ tiner.age }}
                 </p>
                 <p class="card-text">
-                    <strong>Last Active:</strong> {{ tiner.lastActive }}
+                    <strong>Last Active:</strong> {{ tiner.lastActive | timeago}}
                 </p>
                 <p class="card-text">
-                    <strong>Joined Tiner since:</strong> {{ tiner.createdOn }}
+                    <strong>Joined Tiner since:</strong> {{ tiner.createdOn | date: 'dd MMM yyyy' }}
                 </p>
             </div>
             <div class="card-footer text-center">
