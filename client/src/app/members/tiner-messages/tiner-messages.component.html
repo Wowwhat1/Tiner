@@ -1,0 +1,63 @@
+<div class="card shadow-sm">
+    <!-- Card Body -->
+    <div class="card-body chat-container">
+        <!-- No Messages Placeholder -->
+        @if (messes().length === 0) {
+        <p class="text-center text-muted">No messages found</p>
+        }
+        @else {
+        <!-- Chat Messages List -->
+        <ul class="chat list-unstyled">
+            @for (message of messes(); track message.id) {
+            <li class="chat-item mb-3">
+                <div
+                    class="d-flex @if (message.senderUsername === username()) flex-row-reverse @else flex-row @endif align-items-start">
+                    <!-- Profile Image -->
+                    <img src="{{message.senderPhotoUrl || './assets/photo.png'}}"
+                        class="rounded-circle img-fluid shadow-sm" alt="User Image"
+                        style="width: 45px; height: 45px; object-fit: cover;">
+
+                    <!-- Chat Message Body -->
+                    <div class="chat-body ms-2">
+                        <!-- Message Metadata -->
+                        <div class="d-flex justify-content-between">
+                            <span class="text-muted small">
+                                <span class="fa fa-clock me-1"></span>
+                                {{message.createdAt | timeago}}
+                                @if (!message.readAt && message.senderUsername !== username()) {
+                                <span class="text-danger">(unread)</span>
+                                }
+                                @if (message.readAt && message.senderUsername !== username()) {
+                                <span class="text-success">(read {{message.readAt | timeago}})</span>
+                                }
+                            </span>
+                        </div>
+
+                        <!-- Message Content -->
+                        <p class="bg-light p-2 rounded mb-0 shadow-sm">
+                            {{message.content}}
+                        </p>
+                    </div>
+                </div>
+            </li>
+            }
+        </ul>
+        }
+    </div>
+
+    <!-- Card Footer -->
+    <div class="card-footer bg-light">
+        <form #messForm="ngForm" (ngSubmit)="sendMessage()">
+            <div class="input-group">
+                <!-- Message Input -->
+                <input type="text" name="content" required 
+                    [(ngModel)]="messContent" class="form-control" placeholder="Type a message..." aria-label="Type a message">
+
+                <!-- Send Button -->
+                <button class="btn btn-primary" type="submit" [disabled]="!messForm.valid">
+                    <i class="fa fa-paper-plane"></i> Send
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

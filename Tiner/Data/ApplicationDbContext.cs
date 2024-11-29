@@ -7,6 +7,7 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
 {
     public DbSet<AppUser> AppUsers { get; set; }
     public DbSet<MatchedUser> MatchedUsers { get; set; }
+    public DbSet<Message> Messages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,5 +27,15 @@ public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
             .WithMany(x => x.MatchedByUsers)
             .HasForeignKey(x => x.TargetUserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<Message>()
+            .HasOne(x => x.Receiver)
+            .WithMany(x => x.MessagesReceived)
+            .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<Message>()
+            .HasOne(x => x.Sender)
+            .WithMany(x => x.MessagesSent)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

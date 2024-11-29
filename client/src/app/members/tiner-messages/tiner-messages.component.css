@@ -1,0 +1,22 @@
+.chat-container {
+    max-height: 500px;
+    /* Set max height for the chat */
+    overflow-y: auto;
+    /* Enable scrolling for overflow */
+}
+
+.chat-item:hover .chat-body {
+    background-color: #f1f1f1;
+    /* Light hover effect for messages */
+}
+
+.chat-body p {
+    border-radius: 10px;
+    /* Rounded corners for message bubbles */
+    transition: background-color 0.2s ease-in-out;
+}
+
+.chat-body p:hover {
+    background-color: #e8e8e8;
+    /* Subtle hover effect for message bubbles */
+}

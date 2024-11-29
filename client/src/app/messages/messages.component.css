@@ -1,0 +1,25 @@
+.cursor-pointer {
+    cursor: pointer;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.cursor-pointer:hover {
+    background-color: #f8f9fa;
+    /* Light hover effect */
+}
+
+.table img {
+    border: 2px solid #ddd;
+    transition: transform 0.2s;
+}
+
+.table img:hover {
+    transform: scale(1.1);
+    /* Slight zoom-in effect on hover */
+}
+
+.table td,
+.table th {
+    vertical-align: middle;
+    /* Align content vertically in the middle */
+}

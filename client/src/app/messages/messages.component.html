@@ -1,1 +1,80 @@
-<p>messages works!</p>
+<div class="container mt-3">
+    <div class="d-flex">
+        <div class="btn-group">
+            <button class="btn btn-primary" btnRadio="Unread" [(ngModel)]="container" (click)="loadMessage()">Unread</button>
+
+            <button class="btn btn-primary" btnRadio="Inbox" [(ngModel)]="container" (click)="loadMessage()">Inbox</button>
+
+            <button class="btn btn-primary" btnRadio="Outbox" [(ngModel)]="container" (click)="loadMessage()">Outbox</button>
+        </div>
+    </div>
+</div>
+
+@if (!messService.paginatedResult()?.items || messService.paginatedResult()?.items?.length === 0) {
+    <div class="container mt-3">
+        <p class="text-center">No messages found</p>
+    </div>
+} @else {
+<div class="table-responsive mt-3">
+    <table class="table table-hover align-middle">
+        <!-- Table Header -->
+        <thead class="table-dark">
+            <tr>
+                <th class="text-start">Message</th>
+                <th class="text-center">From/To</th>
+                <th class="text-center">Sent/Received</th>
+                <th class="text-end">Actions</th>
+            </tr>
+        </thead>
+
+        <!-- Table Body -->
+        <tbody>
+            @for (message of messService.paginatedResult()?.items; track message.id) {
+            <tr routerLink="{{getRoute(message)}}" [queryParams]="{tab: 'Messages'}"  class="cursor-pointer">
+                <!-- Message Content -->
+                <td class="text-start">
+                    <span class="text-truncate" style="max-width: 250px; display: inline-block;">
+                        {{message.content}}
+                    </span>
+                </td>
+
+                <!-- Sender/Receiver Information -->
+                <td class="text-center">
+                    <div class="d-flex align-items-center justify-content-center">
+                        <img [src]="isOutbox ? (message.receiverPhotoUrl || './assets/photo.png') 
+                                : (message.senderPhotoUrl || './assets/photo.png')" alt="User Image"
+                            class="rounded-circle me-2" style="width: 40px; height: 40px; object-fit: cover;">
+                        <strong>
+                            {{isOutbox ? message.receiverUsername : message.senderUsername}}
+                        </strong>
+                    </div>
+                </td>
+
+                <!-- Sent/Received Time -->
+                <td class="text-center">
+                    <small class="text-muted">{{message.createdAt | timeago}}</small>
+                </td>
+
+                <!-- Actions -->
+                <td class="text-end" (click)="$event.stopPropagation()">
+                    <button class="btn btn-danger btn-sm" (click)="deleteMessage(message.id)">
+                        <i class="fa fa-trash"></i> Delete
+                    </button>
+                </td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+}
+
+<!-- Pagination -->
+@if (messService.paginatedResult()?.pagination && messService.paginatedResult()?.pagination!.totalCount > 0) {
+<div class="d-flex justify-content-center mt-4">
+    <pagination [boundaryLinks]="true" [totalItems]="messService.paginatedResult()?.pagination!.totalCount"
+        [itemsPerPage]="messService.paginatedResult()?.pagination!.pageSize" (pageChanged)="pageChanged($event)"
+        [(ngModel)]="messService.paginatedResult()?.pagination!.currentPage" [maxSize]="10" previousText="&lsaquo;"
+        nextText="&rsaquo;" firstText="&laquo;" lastText="&raquo;">
+    </pagination>
+</div>
+}

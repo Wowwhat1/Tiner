@@ -10,6 +10,7 @@ import { NotFoundComponent } from './errors/not-found/not-found.component';
 import { ServerErrorComponent } from './errors/server-error/server-error.component';
 import { TinerEditComponent } from './members/tiner-edit/tiner-edit.component';
 import { preventUnsavedChangesGuard } from './_guards/prevent-unsaved-changes.guard';
+import { tinerDetailedResolver } from './_resolver/tiner-detailed.resolver';
 
 export const routes: Routes = [
     {path: '', component: HomeComponent},
@@ -19,7 +20,7 @@ export const routes: Routes = [
         canActivate: [authGuard],
         children: [
             {path: 'members', component: TinerListComponent},
-            {path: 'members/:username', component: TinerDetailComponent},
+            {path: 'members/:username', component: TinerDetailComponent, resolve: {tiner: tinerDetailedResolver}},
             {path: 'member/edit', component: TinerEditComponent, 
                 canDeactivate: [preventUnsavedChangesGuard]},
             {path: 'lists', component: ListsComponent},

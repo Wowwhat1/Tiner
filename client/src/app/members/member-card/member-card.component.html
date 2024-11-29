@@ -11,7 +11,7 @@
             </li>
 
             <li class="list-inline-item">
-                <button class="btn btn-primary"><i class="fa fa-envelope"></i></button>
+                <button class="btn btn-primary" routerLink="/members/{{tiner.userName}}" [queryParams]="{tab: 'Messages'}"><i class="fa fa-envelope"></i></button>
             </li>
         </ul>
     </div>
