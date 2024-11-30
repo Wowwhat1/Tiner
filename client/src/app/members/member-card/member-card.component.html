@@ -18,7 +18,9 @@
 
     <div class="card-body p-2">
         <h6 class="card-title text-center mb-2">
-            <i class="fa fa-user me-2"></i>
+            <span [class.is-online]="isOnl()">
+                <i class="fa fa-user me-2"></i>
+            </span>
             {{tiner.knownAs}}, {{tiner.age}}
             @if (hasMatched()) {
                 <i class="fa fa-heart ms-2" style="color: red;"></i>

@@ -9,6 +9,7 @@ using Tiner.Extensions;
 using Tiner.Middlewares;
 using Microsoft.AspNetCore.Identity;
 using Tiner.Entities;
+using Tiner.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,13 +22,15 @@ var app = builder.Build();
 
 // Congigure the HTTP request pipeline
 app.UseMiddleware<ExceptionMiddleware>();
-app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod()
+app.UseCors(x => x.AllowAnyHeader().AllowAnyMethod().AllowCredentials()
     .WithOrigins("http://localhost:4200", "https://localhost:4200"));
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapHub<PresenceHub>("hubs/presence");
+app.MapHub<MessageHub>("hubs/message");
 
 using var scope = app.Services.CreateScope();
 var services = scope.ServiceProvider;
@@ -37,6 +40,7 @@ try {
     var userManager = services.GetRequiredService<UserManager<AppUser>>();
     var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
     await context.Database.MigrateAsync();
+    await context.Database.ExecuteSqlRawAsync("DELETE FROM [Connections]");
     await Seed.SeedData(userManager, roleManager);
 } catch (Exception ex) {
     var logger = services.GetRequiredService<ILogger<Program>>();

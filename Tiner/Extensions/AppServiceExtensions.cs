@@ -5,6 +5,7 @@ using Tiner.Entities;
 using Tiner.Helpers;
 using Tiner.Interfaces;
 using Tiner.Services;
+using Tiner.SignalR;
 
 namespace Tiner.Extensions;
 
@@ -23,6 +24,8 @@ public static class AppServiceExtensions {
         services.AddScoped<LogUserActivity>();
         services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
         services.Configure<CloudinarySettings>(config.GetSection("CloudinarySettings"));
+        services.AddSignalR();
+        services.AddSingleton<PresenceTracker>();
 
         return services;
     }

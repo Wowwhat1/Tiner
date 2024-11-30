@@ -2,13 +2,13 @@
     <!-- Card Body -->
     <div class="card-body chat-container">
         <!-- No Messages Placeholder -->
-        @if (messes().length === 0) {
+        @if (mesService.messThread().length === 0) {
         <p class="text-center text-muted">No messages found</p>
         }
         @else {
         <!-- Chat Messages List -->
         <ul class="chat list-unstyled">
-            @for (message of messes(); track message.id) {
+            @for (message of mesService.messThread(); track message.id) {
             <li class="chat-item mb-3">
                 <div
                     class="d-flex @if (message.senderUsername === username()) flex-row-reverse @else flex-row @endif align-items-start">

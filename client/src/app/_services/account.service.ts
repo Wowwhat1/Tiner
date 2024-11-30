@@ -4,6 +4,7 @@ import { User } from '../_models/user';
 import { map } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { MatchService } from './match.service';
+import { PresenceService } from './presence.service';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ export class AccountService {
   private http = inject(HttpClient);
   private matchService = inject(MatchService);
   baseUrl = environment.apiUrl;
+  private presService = inject(PresenceService);
   currentUser = signal<User | null>(null);
   roles = computed(() => {
     const user = this.currentUser();
@@ -48,10 +50,12 @@ export class AccountService {
     localStorage.setItem('user', JSON.stringify(user));
     this.currentUser.set(user);
     this.matchService.getMatchIds();
+    this.presService.createHubConnection(user);
   }
 
-  logout(model: any) {
+  logout() {
     localStorage.removeItem('user');
     this.currentUser.set(null);
+    this.presService.stopHubConnection();
   }
 }

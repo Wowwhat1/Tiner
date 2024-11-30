@@ -1,5 +1,4 @@
-import { Component, inject, input, OnInit, output, ViewChild } from '@angular/core';
-import { Message } from '../../_models/message';
+import { Component, inject, input, ViewChild } from '@angular/core';
 import { MessageService } from '../../_services/message.service';
 import { TimeagoModule } from 'ngx-timeago';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -14,17 +13,23 @@ import { FormsModule, NgForm } from '@angular/forms';
 export class TinerMessagesComponent {
   @ViewChild('messForm') messForm?: NgForm;
   username = input.required<string>();
-  messes = input.required<Message[]>();
-  private mesService = inject(MessageService);
+  mesService = inject(MessageService);
   messContent = '';
-  outComingMess = output<Message>();
 
   sendMessage() {
-    this.mesService.sendMessage(this.username(), this.messContent).subscribe({
-      next: message => {
-        this.outComingMess.emit(message);
-        this.messForm?.reset();
-      }
+    this.mesService.sendMessage(this.username(), this.messContent).then(() => {
+      this.messForm?.reset();
     })
+  }
+
+  refreshMessages(username: string) {
+    console.log(`Refreshing messages for: ${username}`);
+    this.mesService.getMessThread(username).subscribe({
+      next: (messages) => {
+        console.log('Messages fetched:', messages);
+        this.mesService.messThread.set(messages); // Set the fetched messages
+      },
+      error: (error) => console.error('Error fetching messages:', error),
+    });
   }
 }

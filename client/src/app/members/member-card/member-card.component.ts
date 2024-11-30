@@ -2,6 +2,7 @@ import { Component, computed, inject, Input, input, ViewEncapsulation } from '@a
 import { Tiner } from '../../_models/tiner';
 import { RouterLink } from '@angular/router';
 import { MatchService } from '../../_services/match.service';
+import { PresenceService } from '../../_services/presence.service';
 
 @Component({
   selector: 'app-member-card',
@@ -14,6 +15,8 @@ export class MemberCardComponent {
   @Input() tiner!: Tiner;
   private matchService = inject(MatchService);
   hasMatched = computed(() => this.matchService.matchIds().includes(this.tiner.id));
+  private presService = inject(PresenceService);
+  isOnl = computed(() => this.presService.onlineUsers().includes(this.tiner.userName));
 
   toggleMatch() {
     this.matchService.toggleMatch(this.tiner.id).subscribe({

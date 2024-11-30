@@ -3,7 +3,13 @@
         <div class="card mb-3">
             <img [src]="tiner.photoUrl || './assets/user.png'" [alt]="tiner.knownAs"
                 class="card-img-top img-thumbnail w-75 mx-auto mt-3">
+            
             <div class="card-body">
+                @if (preService.onlineUsers().includes(tiner.userName)) {
+                    <div class="mb-2">
+                        <i class="fa fa-user-circle text-success"></i> Online now
+                    </div>
+                }
                 <h5 class="card-title">{{ tiner.knownAs }}</h5>
                 <p class="card-text">
                     <strong>Location:</strong> {{ tiner.city }}, {{ tiner.country }}
@@ -48,7 +54,7 @@
                 }
             </tab>
             <tab heading="Messages" (selectTab)="onActivatedTab($event)">
-                <app-tiner-messages [username]="tiner.userName" [messes]="messes" (outComingMess)="onUpdateMess($event)"></app-tiner-messages>
+                <app-tiner-messages [username]="tiner.userName" ></app-tiner-messages>
             </tab>
         </tabset>
     </div>
