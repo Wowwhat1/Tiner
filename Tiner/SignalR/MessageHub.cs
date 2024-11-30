@@ -8,7 +8,7 @@ using Tiner.Interfaces;
 
 namespace Tiner.SignalR;
 
-public class MessageHub(IMessageRepository messRepository, IUserRepository userRepository, IMapper mapper, IHubContext<PresenceHub> preHub) : Hub
+public class MessageHub(IUnitOfWork unitOfWork, IMapper mapper, IHubContext<PresenceHub> preHub) : Hub
 {
     public override async Task OnConnectedAsync()
     {
@@ -28,7 +28,9 @@ public class MessageHub(IMessageRepository messRepository, IUserRepository userR
 
             await Clients.Group(groupName).SendAsync("UpdatedGroup", group);
 
-            var messages = await messRepository.GetMessageThread(Context.User.GetUsername(), user!);
+            var messages = await unitOfWork.MessageRepository.GetMessageThread(Context.User.GetUsername(), user!);
+
+            if (unitOfWork.HasChanges()) await unitOfWork.Complete();
             Console.WriteLine($"Messages for {Context.User.GetUsername()} with {user}: {messages.Count()}");
             await Clients.Caller.SendAsync("ReceiveMessageThread", messages);
         }
@@ -57,29 +59,29 @@ public class MessageHub(IMessageRepository messRepository, IUserRepository userR
     private async Task<Group> AddToGroup(string groupName)
     {
         var username = Context.User?.GetUsername() ?? throw new Exception("User not found");
-        var group = await messRepository.GetMessageGroup(groupName);
+        var group = await unitOfWork.MessageRepository.GetMessageGroup(groupName);
         var connection = new Connection{ ConnectionId = Context.ConnectionId, Username = username };
 
         if (group == null)
         {
             group = new Group { Name = groupName };
-            messRepository.AddGroup(group);
+            unitOfWork.MessageRepository.AddGroup(group);
         }
 
         group.Connections.Add(connection);
 
-        if (await messRepository.SaveAllAsync()) return group;
+        if (await unitOfWork.Complete()) return group;
 
         throw new HubException("Failed to join group");
     }
 
     private async Task<Group> DelFromMessGroup() {
-        var group = await messRepository.GetGroupForConnection(Context.ConnectionId);
+        var group = await unitOfWork.MessageRepository.GetGroupForConnection(Context.ConnectionId);
         var connection = group?.Connections.FirstOrDefault(x => x.ConnectionId == Context.ConnectionId);
 
         if (connection != null && group != null) {
-            messRepository.DelConnection(connection);
-            if (await messRepository.SaveAllAsync()) return group;
+            unitOfWork.MessageRepository.DelConnection(connection);
+            if (await unitOfWork.Complete()) return group;
         }
 
         throw new HubException("Failed to remove from group");
@@ -90,8 +92,8 @@ public class MessageHub(IMessageRepository messRepository, IUserRepository userR
 
         if (username == createMessDto.ReceiverUsername.ToLower()) throw new HubException("You cannot send messages to yourself");
 
-        var sender = await userRepository.GetUserByUsernameAsync(username);
-        var receiver = await userRepository.GetUserByUsernameAsync(createMessDto.ReceiverUsername);
+        var sender = await unitOfWork.UserRepository.GetUserByUsernameAsync(username);
+        var receiver = await unitOfWork.UserRepository.GetUserByUsernameAsync(createMessDto.ReceiverUsername);
 
         if (receiver == null || sender == null || sender.UserName == null || receiver.UserName == null)
             throw new HubException("Cannot send message now");
@@ -106,7 +108,7 @@ public class MessageHub(IMessageRepository messRepository, IUserRepository userR
         };
 
         var groupName = GetGroupName(sender.UserName, receiver.UserName);
-        var group = await messRepository.GetMessageGroup(groupName);
+        var group = await unitOfWork.MessageRepository.GetMessageGroup(groupName);
 
         if (group != null && group.Connections.Any(x => x.Username == receiver.UserName))
         {
@@ -120,9 +122,9 @@ public class MessageHub(IMessageRepository messRepository, IUserRepository userR
             }
         }
 
-        messRepository.AddMessage(message);
+        unitOfWork.MessageRepository.AddMessage(message);
 
-        if (await messRepository.SaveAllAsync()) {
+        if (await unitOfWork.Complete()) {
             await Clients.Group(groupName).SendAsync("NewMessage", mapper.Map<MessageDto>(message));
         }
     }

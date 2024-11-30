@@ -14,11 +14,11 @@ using Tiner.Interfaces;
 namespace Tiner.Controllers;
 
 [Authorize]
-public class UserController(IUserRepository userRepository, IMapper mapper, IPhotoService photoService) : BaseApiController {
+public class UserController(IUnitOfWork unitOfWork, IMapper mapper, IPhotoService photoService) : BaseApiController {
     [HttpGet] // /api/user
     public async Task<ActionResult<IEnumerable<TinerDto>>> GetUsers([FromQuery]UserParams userParams) {
         userParams.CurrentUsername = User.GetUsername();
-        var users = await userRepository.GetTinerAsync(userParams);
+        var users = await unitOfWork.UserRepository.GetTinerAsync(userParams);
 
         Response.AddPaginationHeader(users);
 
@@ -28,7 +28,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper, IPho
     [HttpGet("{username}")] // /api/user/{id}
     public async Task<ActionResult<TinerDto>> GetUser(string username)
     {
-        var user = await userRepository.GetTinerByNameAsync(username);
+        var user = await unitOfWork.UserRepository.GetTinerByNameAsync(username);
 
         if (user == null)
         {
@@ -41,7 +41,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper, IPho
     [HttpPut] // /api/update
     public async Task<ActionResult> UpdateUser(TinerUpdateDto tinerUpdateDto)
     {
-        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+        var user = await unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
         if (user == null)
         {
             return BadRequest("User not found");
@@ -49,7 +49,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper, IPho
 
         mapper.Map(tinerUpdateDto, user);
 
-        if (await userRepository.SaveAsync())
+        if (await unitOfWork.Complete())
         {
             return NoContent();
         }
@@ -59,7 +59,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper, IPho
 
     [HttpPost("add-photo")] // /api/user/add-photo
     public async Task<ActionResult<PhotoDto>> AddPhoto(IFormFile formFile) {
-        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+        var user = await unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
 
         if (user == null)
         {
@@ -86,7 +86,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper, IPho
 
         user.Photos.Add(photo);
 
-        if (await userRepository.SaveAsync())
+        if (await unitOfWork.Complete())
         {
             return CreatedAtAction("GetUser", new { username = user.UserName }, mapper.Map<PhotoDto>(photo));
         }
@@ -96,7 +96,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper, IPho
 
     [HttpPut("set-main-photo/{photoId:int}")] // /api/user/set-main-photo/{photoId}
     public async Task<ActionResult> SetMainPhoto(int photoId) {
-        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+        var user = await unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
 
         if (user == null)
         {
@@ -117,7 +117,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper, IPho
         }
         photo.IsMain = true;
 
-        if (await userRepository.SaveAsync())
+        if (await unitOfWork.Complete())
         {
             return NoContent();
         }
@@ -127,7 +127,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper, IPho
 
     [HttpDelete("delete-photo/{photoId:int}")] // /api/user/delete-photo/{photoId}
     public async Task<ActionResult> DeletePhoto(int photoId) {
-        var user = await userRepository.GetUserByUsernameAsync(User.GetUsername());
+        var user = await unitOfWork.UserRepository.GetUserByUsernameAsync(User.GetUsername());
 
         if (user == null)
         {
@@ -157,7 +157,7 @@ public class UserController(IUserRepository userRepository, IMapper mapper, IPho
 
         user.Photos.Remove(photo);
 
-        if (await userRepository.SaveAsync())
+        if (await unitOfWork.Complete())
         {
             return Ok();
         }

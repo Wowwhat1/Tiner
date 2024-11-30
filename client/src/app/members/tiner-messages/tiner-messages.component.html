@@ -1,6 +1,6 @@
 <div class="card shadow-sm">
     <!-- Card Body -->
-    <div class="card-body chat-container">
+    <div class="card-body chat-container" #scrollMe>
         <!-- No Messages Placeholder -->
         @if (mesService.messThread().length === 0) {
         <p class="text-center text-muted">No messages found</p>

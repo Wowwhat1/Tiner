@@ -1,9 +1,13 @@
 import { CanDeactivateFn } from '@angular/router';
 import { TinerEditComponent } from '../members/tiner-edit/tiner-edit.component';
+import { inject } from '@angular/core';
+import { ConfirmService } from '../_services/confirm.service';
 
 export const preventUnsavedChangesGuard: CanDeactivateFn<TinerEditComponent> = (component) => {
+  const confirmService = inject(ConfirmService);
+  
   if (component.editForm?.dirty) {
-    return confirm('Unsaved changes will be lost, please save your changes before leaving.');
+    return confirmService.confirm() ?? false;
   }
   return true;
 };

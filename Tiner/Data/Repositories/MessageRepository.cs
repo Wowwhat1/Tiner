@@ -69,21 +69,19 @@ public class MessageRepository(ApplicationDbContext context, IMapper mapper) : I
 
     public async Task<IEnumerable<MessageDto>> GetMessageThread(string curUsername, string receiverUsername)
     {
-        var mess = await context.Messages
+        var query = context.Messages
             .Where(m => m.Receiver.UserName == curUsername && m.Sender.UserName == receiverUsername && m.IsReceiverDeleted == false
                         || m.Receiver.UserName == receiverUsername && m.Sender.UserName == curUsername && m.IsSenderDeleted == false)
             .OrderBy(m => m.CreatedAt)
-            .ProjectTo<MessageDto>(mapper.ConfigurationProvider)
-            .ToListAsync();
+            .AsQueryable();
 
-        var unreadMess = mess.Where(m => m.ReceiverUsername == curUsername && m.ReadAt == null).ToList();
+        var unreadMess = query.Where(m => m.ReceiverUsername == curUsername && m.ReadAt == null).ToList();
 
         if (unreadMess.Count != 0) {
             unreadMess.ForEach(m => m.ReadAt = DateTime.UtcNow);
-            await context.SaveChangesAsync();
         }
 
-        return mess;
+        return await query.ProjectTo<MessageDto>(mapper.ConfigurationProvider).ToListAsync();
     }
 
     public async Task<bool> SaveAllAsync()

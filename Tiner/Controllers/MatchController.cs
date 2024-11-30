@@ -8,7 +8,7 @@ using Tiner.Interfaces;
 
 namespace Tiner.Controllers;
 
-public class MatchController(IMatchedRepository matchedRepository) : BaseApiController {
+public class MatchController(IUnitOfWork unitOfWork) : BaseApiController {
     [HttpPost("{targetUserId:int}")]
     public async Task<ActionResult> ToggleMatch(int targetUserId)
     {
@@ -16,7 +16,7 @@ public class MatchController(IMatchedRepository matchedRepository) : BaseApiCont
         
         if (srcUserId == targetUserId) return BadRequest("You cannot match with yourself");
 
-        var existMatch = await matchedRepository.GetMatchedUser(srcUserId, targetUserId);
+        var existMatch = await unitOfWork.MatchedRepository.GetMatchedUser(srcUserId, targetUserId);
 
         if (existMatch == null)
         {
@@ -26,12 +26,12 @@ public class MatchController(IMatchedRepository matchedRepository) : BaseApiCont
                 TargetUserId = targetUserId
             };
 
-            matchedRepository.AddMatch(matchedUser);
+            unitOfWork.MatchedRepository.AddMatch(matchedUser);
         } else {
-            matchedRepository.DeleteMatch(existMatch);
+            unitOfWork.MatchedRepository.DeleteMatch(existMatch);
         }
 
-        if (await matchedRepository.SaveChanges())
+        if (await unitOfWork.Complete())
         {
             return Ok();
         }
@@ -42,14 +42,14 @@ public class MatchController(IMatchedRepository matchedRepository) : BaseApiCont
     [HttpGet("list")]
     public async Task<ActionResult<IEnumerable<int>>> GetCurUserMatchIds()
     {
-        return Ok(await matchedRepository.GetCurrentUserMatchedIds(User.GetUserId()));
+        return Ok(await unitOfWork.MatchedRepository.GetCurrentUserMatchedIds(User.GetUserId()));
     }
 
     [HttpGet]
     public async Task<ActionResult<IEnumerable<TinerDto>>> GetMatchedUsers([FromQuery]MatchParams matchParams)
     {
         matchParams.UserId = User.GetUserId();
-        var users = await matchedRepository.GetMatchedUsers(matchParams);
+        var users = await unitOfWork.MatchedRepository.GetMatchedUsers(matchParams);
 
         Response.AddPaginationHeader(users);
 

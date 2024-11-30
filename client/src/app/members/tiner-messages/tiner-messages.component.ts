@@ -1,4 +1,4 @@
-import { Component, inject, input, ViewChild } from '@angular/core';
+import { AfterViewChecked, Component, inject, input, ViewChild } from '@angular/core';
 import { MessageService } from '../../_services/message.service';
 import { TimeagoModule } from 'ngx-timeago';
 import { FormsModule, NgForm } from '@angular/forms';
@@ -10,8 +10,9 @@ import { FormsModule, NgForm } from '@angular/forms';
   templateUrl: './tiner-messages.component.html',
   styleUrl: './tiner-messages.component.css'
 })
-export class TinerMessagesComponent {
+export class TinerMessagesComponent implements AfterViewChecked {
   @ViewChild('messForm') messForm?: NgForm;
+  @ViewChild('scrollMe') private myScrollContainer?: any;
   username = input.required<string>();
   mesService = inject(MessageService);
   messContent = '';
@@ -19,7 +20,19 @@ export class TinerMessagesComponent {
   sendMessage() {
     this.mesService.sendMessage(this.username(), this.messContent).then(() => {
       this.messForm?.reset();
+      this.scrollToBottom();
     })
+  }
+
+  ngAfterViewChecked() : void {
+    this.scrollToBottom();
+  }
+
+  private scrollToBottom() {
+    if (this.myScrollContainer) {
+      this.myScrollContainer.nativeElement.scrollTop = this.myScrollContainer.nativeElement.scrollHeight;
+      console.log('Scrolled to bottom');
+    }
   }
 
   refreshMessages(username: string) {
