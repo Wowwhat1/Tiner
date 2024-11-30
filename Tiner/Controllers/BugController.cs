@@ -17,7 +17,7 @@ public class BugController(ApplicationDbContext context) : BaseApiController
     [HttpGet("not-found")]
     public ActionResult<AppUser> GetNotFound()
     {
-        var thing = context.AppUsers.Find(-1);
+        var thing = context.Users.Find(-1);
 
         if (thing == null) return NotFound();
 
@@ -27,7 +27,7 @@ public class BugController(ApplicationDbContext context) : BaseApiController
     [HttpGet("server-error")]
     public ActionResult<AppUser> GetServerError()
     {
-        var thing = context.AppUsers.Find(-1) ?? throw new Exception("Server Error");
+        var thing = context.Users.Find(-1) ?? throw new Exception("Server Error");
 
         return thing;
     }

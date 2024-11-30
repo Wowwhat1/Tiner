@@ -7,6 +7,8 @@ using Tiner.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Tiner.Extensions;
 using Tiner.Middlewares;
+using Microsoft.AspNetCore.Identity;
+using Tiner.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -32,8 +34,10 @@ var services = scope.ServiceProvider;
 
 try {
     var context = services.GetRequiredService<ApplicationDbContext>();
+    var userManager = services.GetRequiredService<UserManager<AppUser>>();
+    var roleManager = services.GetRequiredService<RoleManager<AppRole>>();
     await context.Database.MigrateAsync();
-    await Seed.SeedData(context);
+    await Seed.SeedData(userManager, roleManager);
 } catch (Exception ex) {
     var logger = services.GetRequiredService<ILogger<Program>>();
     logger.LogError(ex, "An error occured during migration");

@@ -20,7 +20,8 @@ public class MessagesController(IMessageRepository messageRepository, IUserRepos
         var sender = await userRepository.GetUserByUsernameAsync(username);
         var receiver = await userRepository.GetUserByUsernameAsync(createMessDto.ReceiverUsername);
 
-        if (receiver == null || sender == null) return BadRequest("Cannot send message now");
+        if (receiver == null || sender == null || sender.UserName == null || receiver.UserName == null) 
+            return BadRequest("Cannot send message now");
 
         var message = new Message {
             Sender = sender,

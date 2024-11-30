@@ -12,7 +12,7 @@ public class UserRepository(ApplicationDbContext context, IMapper mapper) : IUse
 {
     public async Task<PagedList<TinerDto>> GetTinerAsync(UserParams userParams)
     {
-        var query = context.AppUsers.AsQueryable();
+        var query = context.Users.AsQueryable();
 
         query = query.Where(x => x.UserName != userParams.CurrentUsername);
 
@@ -38,24 +38,24 @@ public class UserRepository(ApplicationDbContext context, IMapper mapper) : IUse
 
     public async Task<TinerDto?> GetTinerByNameAsync(string name)
     {
-        return await context.AppUsers.Where(x => x.UserName == name)
+        return await context.Users.Where(x => x.UserName == name)
             .ProjectTo<TinerDto>(mapper.ConfigurationProvider).SingleOrDefaultAsync();
     }
 
     public async Task<AppUser?> GetUserByIdAsync(int id)
     {
-        return await context.AppUsers.FindAsync(id);
+        return await context.Users.FindAsync(id);
     }
 
     public async Task<AppUser> GetUserByUsernameAsync(string username)
     {
-        return await context.AppUsers.Include(x => x.Photos)
+        return await context.Users.Include(x => x.Photos)
             .SingleOrDefaultAsync(x => x.UserName == username);
     }
 
     public async Task<IEnumerable<AppUser>> GetUsersAsync()
     {
-        return await context.AppUsers.Include(x => x.Photos).ToListAsync();
+        return await context.Users.Include(x => x.Photos).ToListAsync();
     }
 
     public async Task<bool> SaveAsync()

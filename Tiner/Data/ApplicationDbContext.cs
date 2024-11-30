@@ -1,17 +1,31 @@
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Tiner.Entities;
 
 namespace Tiner.Data;
 
-public class ApplicationDbContext(DbContextOptions options) : DbContext(options)
+public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<AppUser, AppRole, int, IdentityUserClaim<int>, AppUserRole, 
+    IdentityUserLogin<int>, IdentityRoleClaim<int>, IdentityUserToken<int>>(options)
 {
-    public DbSet<AppUser> AppUsers { get; set; }
     public DbSet<MatchedUser> MatchedUsers { get; set; }
     public DbSet<Message> Messages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
+
+        modelBuilder.Entity<AppUser>()
+            .HasMany(x => x.UserRoles)
+            .WithOne(x => x.User)
+            .HasForeignKey(x => x.UserId)
+            .IsRequired();
+
+        modelBuilder.Entity<AppRole>()
+            .HasMany(x => x.UserRoles)
+            .WithOne(x => x.Role)
+            .HasForeignKey(x => x.RoleId)
+            .IsRequired();
 
         modelBuilder.Entity<MatchedUser>()
             .HasKey(x => new { x.SrcUserId, x.TargetUserId });
