@@ -8,6 +8,7 @@ import { HubConnection, HubConnectionBuilder, HubConnectionState } from '@micros
 import { User } from '../_models/user';
 import { ToastrService } from 'ngx-toastr';
 import { Group } from '../_models/group';
+import { BusyService } from './busy.service';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,7 @@ export class MessageService {
   hubConnection?: HubConnection;
   private toastr = inject(ToastrService);
   messThread = signal<Message[]>([]);
+  private busySer = inject(BusyService);
 
   createHubConnection(user: User, otherUsername: string) {
     console.log('Creating Hub Connection');
@@ -42,7 +44,8 @@ export class MessageService {
     this.hubConnection
       .start()
       .then(() => console.log('Hub Connection Started'))
-      .catch((error) => console.error('Error Starting Hub Connection:', error));
+      .catch((error) => console.error('Error Starting Hub Connection:', error))
+      .finally(() => this.busySer.idle());
 
     this.hubConnection.on('ReceiveMessageThread', (messages) => {
       console.log('Messages Received:', messages);

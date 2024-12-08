@@ -16,12 +16,14 @@ export class TinerMessagesComponent implements AfterViewChecked {
   username = input.required<string>();
   mesService = inject(MessageService);
   messContent = '';
+  loading = false;
 
   sendMessage() {
+    this.loading = true;
     this.mesService.sendMessage(this.username(), this.messContent).then(() => {
       this.messForm?.reset();
       this.scrollToBottom();
-    })
+    }).finally(() => this.loading = false)
   }
 
   ngAfterViewChecked() : void {

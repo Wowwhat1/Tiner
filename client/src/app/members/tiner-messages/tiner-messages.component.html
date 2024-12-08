@@ -56,6 +56,9 @@
                 <!-- Send Button -->
                 <button class="btn btn-primary" type="submit" [disabled]="!messForm.valid">
                     <i class="fa fa-paper-plane"></i> Send
+                    @if (loading) {
+                        <i class="fa fa-spinner fa-spin"></i>
+                    }
                 </button>
             </div>
         </form>
