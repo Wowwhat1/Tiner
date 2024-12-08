@@ -13,7 +13,7 @@ public static class AppServiceExtensions {
     public static IServiceCollection AddApplicationServices(this IServiceCollection services, IConfiguration config) {
         services.AddControllers();
         services.AddDbContext<ApplicationDbContext>(options =>
-            options.UseSqlite(config.GetConnectionString("DefaultConnection")));
+            options.UseSqlServer(config.GetConnectionString("DefaultConnection")));
 
         services.AddCors();
         services.AddScoped<ITokenService, TokenService>();

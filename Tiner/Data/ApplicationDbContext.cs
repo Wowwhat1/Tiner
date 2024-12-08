@@ -42,7 +42,7 @@ public class ApplicationDbContext(DbContextOptions options) : IdentityDbContext<
             .HasOne(x => x.TargetUser)
             .WithMany(x => x.MatchedByUsers)
             .HasForeignKey(x => x.TargetUserId)
-            .OnDelete(DeleteBehavior.Cascade);
+            .OnDelete(DeleteBehavior.NoAction);
 
         modelBuilder.Entity<Message>()
             .HasOne(x => x.Receiver)
